@@ -3,28 +3,28 @@ import sqlite3 as sql
 con =sql.connect('dados.db')
 
 #INSERT===========================================================================================================
-def inserir(i):
+def inserir_form(i):
     with con:
         cur = con.cursor()
         insert = 'INSERT INTO inventario (nome, local, descricao, marca, data_da_compra,valor_da_compra,serie, imagem) VALUES(?,?,?,?,?,?,?,?)'
         cur.execute(insert,i)
 
 #UPDATE===========================================================================================================
-def update(i):
+def update_form(i):
     with con:
         cur = con.cursor()
         update = 'UPDATE inventario set nome=?, local=?, descricao=?, marca=?, data_da_compra=?, valor_da_compra=?, serie=?, imagem=? WHERE id=?'
         cur.execute(update,i)
 
 #DELETE===========================================================================================================
-def delete(i):
+def delete_form(i):
     with con:
         cur = con.cursor()
         delete = 'DELETE FROM inventario WHERE ID =?'
         cur.execute(delete,i)
 
 #SELECT INDIVIDUAL================================================================================================
-def select_individual(id):
+def select_individual_form(id):
     ver_um_dado=[]
     with con:
         cur = con.cursor()
@@ -36,7 +36,7 @@ def select_individual(id):
             ver_um_dado.append(row)
 
 #SELECT===========================================================================================================
-def select():
+def select_form():
     ver_dados=[]
 
     with con:
