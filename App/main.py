@@ -1,4 +1,5 @@
 
+from asyncio.windows_events import NULL
 from email.mime import image
 from threading import local
 from tkinter import *
@@ -8,6 +9,7 @@ from webbrowser import BackgroundBrowser
 from PIL import ImageTk, Image
 from tkcalendar import Calendar, DateEntry
 from datetime import date
+from tkinter import filedialog as fd
 #importando viwes
 from view import *
 
@@ -53,35 +55,47 @@ def inserir():
     nome = e_nome.get()
     local = e_area.get()
     descricao = e_des.get()
-    modelo = e_model.get()
-    data = e_data.get()
-    valor = e_vl_compra
+    marca = e_model.get()
+    data_da_compra = e_data.get()
+    valor_da_compra = e_vl_compra.get()
     serie = e_serie.get()
     imagem = imagem_string
 
-    lista_inserir = [nome,local,descricao,modelo,data,valor,serie,imagem]
+    lista_inserir = [nome,local,descricao,marca,data_da_compra,valor_da_compra,serie,imagem]
 
     for i in lista_inserir:
         if i == '':
-            messagebox.showerror('Preencha todos os campos')
+            messagebox.showerror('Erro', 'Preencha todos os campos')
             return
     
     inserir_form(lista_inserir)
-    messagebox.showinfo('Sucesso!')
+    messagebox.showinfo('Sucesso!','Item adicionado')
 
-    nome.delete(0,'end')
-    local.delete(0,'end')
-    descricao.delete(0,'end')
-    modelo.delete(0,'end')
-    data.delete(0,'end')
-    valor.delete(0,'end')
-    serie.delete(0,'end')
-    imagem.delete(0,'end')
+    e_nome.delete(0,'end')
+    e_area.delete(0,'end')
+    e_des.delete(0,'end')
+    e_model.delete(0,'end')
+    e_data.delete(0,'end')
+    e_vl_compra.delete(0,'end')
+    e_serie.delete(0,'end')
 
-    for widget in FrameMeio.winfo_children():
-        widget.destroy()
 
     mostrar()
+
+#Func escolher imagem
+global imagem, imagem_string, l_imagem
+def escolher_imagem():
+    global imagem, imagem_string, l_imagem
+    imagem = fd.askopenfilename()
+    imagem_string = imagem
+
+    imagem = Image.open(imagem)
+    imagem = imagem.resize((170,170))
+    imagem = ImageTk.PhotoImage(imagem)
+
+    l_imagem = Label(FrameMeio, image=imagem, bg=co1, fg=co0)
+    l_imagem.place(x=700,y=10)
+
 
 #Imagem
 app_img = Image.open('icone_main.png')
@@ -138,7 +152,7 @@ e_serie.place(x=130,y=191)
 #Carregar
 l_imagem = Label(FrameMeio, text='Imagem do item', height=1, anchor=NW,font=('Ivy 10 bold'), bg=co1, fg=co0)
 l_imagem.place(x=10,y=220)
-b_carregar = Button(FrameMeio,width=30, overrelief=RIDGE,text='CARREGAR',compound=CENTER, anchor=CENTER, font=('Ivy 8'), bg=co1, fg=co0)
+b_carregar = Button(FrameMeio,command=escolher_imagem,width=30, overrelief=RIDGE,text='CARREGAR',compound=CENTER, anchor=CENTER, font=('Ivy 8'), bg=co1, fg=co0)
 b_carregar.place(x=130,y=221)
 
 #Adicionar
@@ -146,7 +160,7 @@ img_add = Image.open('icone_add.png')
 img_add = img_add.resize((20,20))
 img_add = ImageTk.PhotoImage(img_add)
 
-b_add = Button(FrameMeio,image=img_add, width=95, overrelief=RIDGE,text='  ADICIONAR',compound=LEFT, anchor=NW, font=('Ivy 8'), bg=co1, fg=co0)
+b_add = Button(FrameMeio,image=img_add,command=inserir  ,width=95, overrelief=RIDGE,text='  ADICIONAR',compound=LEFT, anchor=NW, font=('Ivy 8'), bg=co1, fg=co0)
 b_add.place(x=330,y=10)
 
 #Atualizar
@@ -189,9 +203,9 @@ l_total_titulo.place(x=450,y=92)
 #Label baixo
 #tabela
 def mostrar():   
-    tabela_head = ['#Item','Nome',  'Sala/Área','Descrição', 'Marca/Modelo', 'Data da compra','Valor da compra', 'Número de série']
+    tabela_head = ['#Item','Nome',  'Área','Descrição', 'Marca/Modelo', 'Data da compra','Valor da compra', 'Número de série']
 
-    lista_itens = []
+    lista_itens = select_form()
 
 
     tree = ttk.Treeview(FrameBaixo, selectmode="extended",columns=tabela_head, show="headings")
@@ -224,13 +238,15 @@ def mostrar():
         tree.insert('', 'end', values=item)
 
 
-    quantidade = [8888,88]
+    quantidade = [0000,00]
+    quantidade_itens = []
 
     for iten in lista_itens:
         quantidade.append(iten[6])
+        quantidade_itens.append(item[0])
 
     Total_valor = sum(quantidade)
-    Total_itens = len(quantidade)
+    Total_itens = len(quantidade_itens)
 
     l_total['text'] = 'R$ {:,.2f}'.format(Total_valor)
     l_qtd['text'] = Total_itens
